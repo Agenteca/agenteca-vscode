@@ -1,0 +1,59 @@
+name: Release
+# Packages the extension and publishes it when a tag vX.Y.Z is pushed.
+#
+# Secrets, each optional: the matching step is skipped when its secret is absent.
+#   OVSX_PAT  access token from open-vsx.org (Cursor, VSCodium and other forks install from there)
+#   VSCE_PAT  access token for the Visual Studio Marketplace
+# The .vsix is always attached to the GitHub release, so it can also be uploaded by hand.
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/agenteca-core
+          path: agenteca-core
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/agenteca-cli
+          path: agenteca-cli
+      - uses: actions/checkout@v4
+        with:
+          path: agenteca-vscode
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Tag must match package.json
+        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+        working-directory: agenteca-vscode
+      - name: Workspace
+        run: |
+          echo '{"private": true, "workspaces": ["agenteca-core", "agenteca-cli", "agenteca-vscode"]}' > package.json
+          npm install --no-audit --no-fund
+          npm run build -w agenteca-core
+          npm run build -w agenteca-cli
+      - name: Package
+        run: npm run package
+        working-directory: agenteca-vscode
+      - name: Publish to Open VSX
+        if: ${{ env.OVSX_PAT != '' }}
+        run: npx ovsx publish *.vsix -p "$OVSX_PAT"
+        working-directory: agenteca-vscode
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+      - name: Publish to the Visual Studio Marketplace
+        if: ${{ env.VSCE_PAT != '' }}
+        run: npx vsce publish --packagePath *.vsix -p "$VSCE_PAT"
+        working-directory: agenteca-vscode
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      - name: GitHub release
+        run: gh release create "$GITHUB_REF_NAME" *.vsix --title "$GITHUB_REF_NAME" --notes "See CHANGELOG.md." --verify-tag
+        working-directory: agenteca-vscode
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -10,12 +10,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/agenteca-core
+          path: agenteca-core
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/agenteca-cli
+          path: agenteca-cli
+      - uses: actions/checkout@v4
+        with:
+          path: agenteca-vscode
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --no-audit --no-fund
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm test
-      - run: xvfb-run -a npm run test:integration
-      - run: npm run package
+      # Les dépôts Agenteca sont reliés par un espace de travail npm, comme en développement.
+      - name: Espace de travail
+        run: |
+          echo '{"private": true, "workspaces": ["agenteca-core", "agenteca-cli", "agenteca-vscode"]}' > package.json
+          npm install --no-audit --no-fund
+      - name: Construit agenteca-core
+        run: npm run build -w agenteca-core
+      - name: Construit agenteca-cli
+        run: npm run build -w agenteca-cli
+      - name: Lint
+        run: npm run lint
+        working-directory: agenteca-vscode
+      - name: Types
+        run: npm run typecheck
+        working-directory: agenteca-vscode
+      - name: Tests
+        run: npm test
+        working-directory: agenteca-vscode
+      - name: Tests dans VS Code
+        run: xvfb-run -a npm run test:integration
+        working-directory: agenteca-vscode
+      - name: Paquet .vsix
+        run: npm run package
+        working-directory: agenteca-vscode

@@ -1,0 +1,237 @@
+{
+  "name": "agenteca",
+  "displayName": "Agenteca",
+  "description": "Parcourir, installer et mettre à jour des paquets d'agents IA pour Claude Code, Codex, GitHub Copilot et Cursor.",
+  "version": "0.1.0",
+  "publisher": "agenteca",
+  "license": "Apache-2.0",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agenteca/agenteca-vscode.git"
+  },
+  "engines": {
+    "vscode": "^1.95.0",
+    "node": ">=22"
+  },
+  "categories": [
+    "Other",
+    "AI"
+  ],
+  "keywords": [
+    "agents",
+    "skills",
+    "mcp",
+    "claude",
+    "copilot",
+    "cursor",
+    "codex"
+  ],
+  "icon": "media/icon.png",
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "agenteca",
+          "title": "Agenteca",
+          "icon": "media/agenteca.svg"
+        }
+      ]
+    },
+    "views": {
+      "agenteca": [
+        {
+          "id": "agenteca.installed",
+          "name": "Installés"
+        },
+        {
+          "id": "agenteca.updates",
+          "name": "Mises à jour"
+        },
+        {
+          "id": "agenteca.catalog",
+          "name": "Catalogue"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "agenteca.installed",
+        "contents": "Aucun paquet installé dans ce projet.\n[Installer un paquet](command:agenteca.install)\n[Chercher dans le catalogue](command:agenteca.search)"
+      },
+      {
+        "view": "agenteca.updates",
+        "contents": "Tous les paquets sont à jour."
+      },
+      {
+        "view": "agenteca.catalog",
+        "contents": "Le catalogue est vide ou aucun registre n'est configuré.\nAjoutez un registre dans un terminal : `ahub registry add <url>`\n[Actualiser](command:agenteca.refresh)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "agenteca.refresh",
+        "title": "Actualiser",
+        "category": "Agenteca",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "agenteca.search",
+        "title": "Chercher dans le catalogue…",
+        "category": "Agenteca",
+        "icon": "$(search)"
+      },
+      {
+        "command": "agenteca.install",
+        "title": "Installer un paquet…",
+        "category": "Agenteca",
+        "icon": "$(add)"
+      },
+      {
+        "command": "agenteca.showPackage",
+        "title": "Voir le contenu",
+        "category": "Agenteca",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "agenteca.update",
+        "title": "Mettre à jour",
+        "category": "Agenteca",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "agenteca.updateAll",
+        "title": "Tout mettre à jour",
+        "category": "Agenteca",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "agenteca.remove",
+        "title": "Retirer",
+        "category": "Agenteca",
+        "icon": "$(trash)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "agenteca.refresh",
+          "when": "view =~ /^agenteca\\./",
+          "group": "navigation@9"
+        },
+        {
+          "command": "agenteca.install",
+          "when": "view == agenteca.installed",
+          "group": "navigation@1"
+        },
+        {
+          "command": "agenteca.search",
+          "when": "view == agenteca.catalog",
+          "group": "navigation@1"
+        },
+        {
+          "command": "agenteca.updateAll",
+          "when": "view == agenteca.updates",
+          "group": "navigation@1"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "agenteca.showPackage",
+          "when": "viewItem =~ /^agenteca\\.(installed|catalog|update)$/",
+          "group": "inline@1"
+        },
+        {
+          "command": "agenteca.install",
+          "when": "viewItem == agenteca.catalog",
+          "group": "inline@2"
+        },
+        {
+          "command": "agenteca.update",
+          "when": "viewItem == agenteca.update",
+          "group": "inline@2"
+        },
+        {
+          "command": "agenteca.remove",
+          "when": "viewItem == agenteca.installed",
+          "group": "inline@3"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "agenteca.showPackage",
+          "when": "false"
+        },
+        {
+          "command": "agenteca.update",
+          "when": "false"
+        },
+        {
+          "command": "agenteca.remove",
+          "when": "false"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Agenteca",
+      "properties": {
+        "agenteca.ahubPath": {
+          "type": "string",
+          "default": "ahub",
+          "scope": "machine-overridable",
+          "markdownDescription": "Chemin de la commande `ahub`. Par défaut, elle est cherchée dans le `PATH`. Installation : `npm install -g @agenteca/cli`."
+        },
+        "agenteca.tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "claude",
+              "codex",
+              "copilot",
+              "cursor"
+            ]
+          },
+          "default": [],
+          "uniqueItems": true,
+          "markdownDescription": "Outils visés à l'installation. Vide : ceux déclarés dans `apm.yml`, sinon ceux détectés dans le projet."
+        }
+      }
+    }
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Agenteca lance la commande ahub et écrit des fichiers d'agents dans le projet."
+    },
+    "virtualWorkspaces": false
+  },
+  "scripts": {
+    "build": "node esbuild.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src test",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:integration": "npm run build && tsc -p test/integration/tsconfig.json && node test/integration/prepare.mjs && vscode-test",
+    "package": "npm run build && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@agenteca/cli": "^0.1.0",
+    "@agenteca/core": "^0.1.0",
+    "@eslint/js": "^9.17.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.10.0",
+    "@types/vscode": "~1.95.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.2",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^2.1.8"
+  }
+}

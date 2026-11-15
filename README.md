@@ -4,7 +4,7 @@ Browse a catalog of AI agents, read what a package contains, install it and keep
 
 The extension also works in Cursor, VSCodium and other VS Code derivatives, through Open VSX.
 
-> Status: 0.1.0, not published (neither on the VS Code Marketplace nor on Open VSX).
+> Version 0.1.0. Install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=agenteca.agenteca) (`agenteca.agenteca`). Open VSX, for Cursor and VSCodium, is coming; meanwhile the `.vsix` file is attached to each [GitHub release](https://github.com/agenteca/agenteca-vscode/releases).
 
 ## Requirements
 
@@ -83,7 +83,7 @@ npm run test:integration
 npm run package
 ```
 
-Publication, once decided: `vsce publish` for the Marketplace, `npx ovsx publish` for Open VSX.
+Releases: pushing a tag `vX.Y.Z` runs `.github/workflows/release.yml`, which publishes to the Visual Studio Marketplace and Open VSX through trusted publishing (no stored token) and attaches the `.vsix` to the GitHub release.
 
 ## License
 

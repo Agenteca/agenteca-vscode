@@ -204,7 +204,7 @@
   "capabilities": {
     "untrustedWorkspaces": {
       "supported": false,
-      "description": "Agenteca lance la commande ahub et écrit des fichiers d'agents dans le projet."
+      "description": "Agenteca runs the ahub command and writes agent files into the project."
     },
     "virtualWorkspaces": false
   },

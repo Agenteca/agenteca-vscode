@@ -1,6 +1,6 @@
 import { build } from 'esbuild';
 
-// Un seul fichier CommonJS : le client de ahub est embarqué, `vscode` est fourni par l'éditeur.
+// A single CommonJS file: the ahub client is bundled, `vscode` is provided by the editor.
 await build({
   entryPoints: ['src/extension.ts'],
   outfile: 'dist/extension.js',

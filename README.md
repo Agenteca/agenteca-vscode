@@ -1,61 +1,67 @@
-# Agenteca pour VS Code
+# Agenteca for VS Code
 
-Parcourez un catalogue d'agents IA, lisez ce qu'un paquet contient, installez-le et tenez-le à jour — pour Claude Code, Codex, GitHub Copilot et Cursor — sans quitter l'éditeur.
+Browse a catalog of AI agents, read what a package contains, install it and keep it up to date — for Claude Code, Codex, GitHub Copilot and Cursor — without leaving the editor.
 
-L'extension fonctionne aussi dans Cursor, VSCodium et les autres dérivés de VS Code, via Open VSX.
+The extension also works in Cursor, VSCodium and other VS Code derivatives, through Open VSX.
 
-> État : 0.1.0, non publiée (ni sur le Marketplace de VS Code, ni sur Open VSX).
+> Status: 0.1.0, not published (neither on the VS Code Marketplace nor on Open VSX).
 
-## Prérequis
+## Requirements
 
-L'extension est une coque fine au-dessus de la commande `ahub` : elle ne contient aucune logique d'installation. Installez la CLI :
+The extension is a thin shell over the `ahub` command: it contains no installation logic. Install the CLI:
 
 ```bash
 npm install -g @agenteca/cli
 ```
 
-Si `ahub` n'est pas dans le `PATH`, indiquez son chemin dans le réglage `agenteca.ahubPath`.
+If `ahub` is not in the `PATH`, set its path in the `agenteca.ahubPath` setting.
 
-## Ce qu'elle fait
+## What it does
 
-Une icône **Agenteca** dans la barre d'activité ouvre trois vues :
+An **Agenteca** icon in the activity bar opens three views:
 
-| Vue | Contenu | Actions |
+| View | Content | Actions |
 |---|---|---|
-| **Installés** | Paquets du projet | Voir le contenu, retirer, installer un paquet |
-| **Mises à jour** | Paquets dont une version plus récente respecte le manifeste | Mettre à jour, tout mettre à jour |
-| **Catalogue** | Paquets des registres configurés | Voir le contenu, installer, chercher |
+| **Installed** | Packages of the project | Show content, remove, install a package |
+| **Updates** | Packages with a newer version that respects the manifest | Update, update all |
+| **Catalog** | Packages of the configured registries | Show content, install, search |
 
-Les mêmes commandes sont dans la palette, sous « Agenteca ».
+The same commands are in the Command Palette, under "Agenteca".
 
-## Rien n'est écrit sans votre accord
+## Nothing is written without your agreement
 
-Installer, mettre à jour ou retirer se fait toujours ainsi :
+Installing, updating or removing always goes like this:
 
-1. L'extension demande le **plan** à `ahub` et l'ouvre dans l'éditeur : fichiers écrits ou retirés, fichiers de configuration modifiés, hooks et serveurs MCP avec leur commande exacte, résultat du scan de sécurité.
-2. Une boîte de dialogue vous demande d'**appliquer**.
-3. `ahub` applique ce plan exact ; si le dépôt a changé entre-temps, il refuse et il faut relire le nouveau plan.
+1. The extension asks `ahub` for the **plan** and opens it in the editor: files written or removed, configuration files modified, hooks and MCP servers with their exact command, result of the security scan.
+2. A dialog asks you to **apply** it.
+3. `ahub` applies that exact plan; if the repository changed in between, it refuses and the new plan has to be read.
 
-- Un paquet dont le scan relève un **problème critique** ne peut pas être installé depuis l'extension.
-- Un **fichier modifié à la main** n'est écrasé ou supprimé qu'après un accord distinct, qui liste ces fichiers.
-- Le contenu d'un paquet s'affiche comme **texte brut** en lecture seule, jamais comme aperçu rendu : il n'est pas de confiance.
-- L'extension est désactivée dans les espaces de travail non approuvés.
+- A package whose scan finds a **critical problem** cannot be installed from the extension.
+- A **file edited by hand** is only overwritten or deleted after a separate agreement, which lists those files.
+- The content of a package is shown as read-only **plain text**, never as a rendered preview: it is not trusted.
+- The extension is disabled in untrusted workspaces.
 
-## Réglages
+## Languages
 
-| Réglage | Défaut | Rôle |
+The extension follows the display language of VS Code: English, French, Spanish, Chinese (Simplified) and Hindi. It passes the same language to `ahub` (`AHUB_LANG`), so that the plans and messages of the CLI match.
+
+Texts of the code are translated in `l10n/bundle.l10n.<language>.json`, those of the manifest (views, commands, settings) in `package.nls.<language>.json`. `test/unit/l10n.test.ts` fails when a text has no translation.
+
+## Settings
+
+| Setting | Default | Purpose |
 |---|---|---|
-| `agenteca.ahubPath` | `ahub` | Chemin de la commande `ahub` |
-| `agenteca.tools` | `[]` | Outils visés (`claude`, `codex`, `copilot`, `cursor`). Vide : ceux du manifeste, sinon ceux détectés ; à défaut, l'extension vous les demande. |
+| `agenteca.ahubPath` | `ahub` | Path of the `ahub` command |
+| `agenteca.tools` | `[]` | Target tools (`claude`, `codex`, `copilot`, `cursor`). Empty: those of the manifest, otherwise those detected; failing that, the extension asks you. |
 
-Les registres se configurent dans un terminal : `ahub registry add <url>`.
+Registries are configured in a terminal: `ahub registry add <url>`.
 
-## Vérifié, non vérifié
+## Checked, not checked
 
-- Vérifié par les tests : la logique d'affichage, le dialogue avec la vraie CLI, et, dans un vrai VS Code, l'activation, les commandes, la lecture d'un paquet et un cycle installation puis retrait.
-- Non vérifié : le parcours avec les boîtes de dialogue (non automatisables), l'apparence des vues, et le fonctionnement dans Cursor ou VSCodium.
+- Checked by the tests: the display logic, the dialogue with the real CLI, the completeness of the translations and, in a real VS Code, activation, the commands, reading a package and an install-then-remove cycle.
+- Not checked: the path through the dialogs (cannot be automated), the look of the views, the translated interface in a VS Code set to another language, and use in Cursor or VSCodium.
 
-## Développement
+## Development
 
 ```bash
 npm install
@@ -65,20 +71,20 @@ npm install
 npm test
 ```
 
-Tests dans un vrai VS Code (le télécharge au premier lancement ; sous Linux sans écran, préfixez par `xvfb-run -a`) :
+Tests in a real VS Code (downloaded on first run; on Linux without a screen, or in a Wayland session, prefix with `xvfb-run -a` and unset `WAYLAND_DISPLAY`):
 
 ```bash
 npm run test:integration
 ```
 
-Paquet `.vsix` :
+`.vsix` package:
 
 ```bash
 npm run package
 ```
 
-Publication, quand elle sera décidée : `vsce publish` pour le Marketplace, `npx ovsx publish` pour Open VSX.
+Publication, once decided: `vsce publish` for the Marketplace, `npx ovsx publish` for Open VSX.
 
-## Licence
+## License
 
 Apache-2.0.

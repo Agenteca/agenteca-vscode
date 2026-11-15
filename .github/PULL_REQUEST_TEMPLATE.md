@@ -1,10 +1,11 @@
-## Quoi et pourquoi
+## What and why
 
-<!-- Ce que change cette PR, et le besoin auquel elle répond. -->
+<!-- What this pull request changes, and the need it answers. -->
 
-## Vérifications
+## Checks
 
-- [ ] Tests ajoutés ou mis à jour
-- [ ] `CHANGELOG.md` mis à jour (section « Non publié »)
-- [ ] Contrat inchangé, ou changement de version SemVer justifié (schéma JSON de la CLI, OpenAPI du serveur)
-- [ ] Contribution : Developer Certificate of Origin (DCO) : signez vos commits avec `git commit -s`.
+- [ ] Tests added or updated
+- [ ] `CHANGELOG.md` updated (section "Unreleased")
+- [ ] Contract unchanged, or SemVer version change justified (CLI JSON schema, server OpenAPI)
+- [ ] User-facing texts written in English and translated in every catalog (`fr`, `es`, `zh`, `hi`)
+- [ ] Developer Certificate of Origin (DCO): my commits are signed off with `git commit -s`

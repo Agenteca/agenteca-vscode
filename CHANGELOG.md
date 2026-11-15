@@ -1,11 +1,15 @@
-# Journal des modifications
+# Changelog
 
-## [Non publié]
+This project follows [Semantic Versioning](https://semver.org/) and the
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
+
+## [Unreleased]
 
 ## [0.1.0] - 2026-11-14
 
-### Ajouté
+### Added
 
-- Vues Installés, Mises à jour et Catalogue.
-- Installation, mise à jour et retrait avec plan affiché avant accord.
-- Lecture du contenu d’un paquet avant installation.
+- Installed, Updates and Catalog views.
+- Installation, update and removal, with the plan shown before agreement.
+- Reading the content of a package before installing it.
+- Interface in English, French, Spanish, Chinese and Hindi, following the language of VS Code.

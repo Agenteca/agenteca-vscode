@@ -1,6 +1,6 @@
 import { defineConfig } from '@vscode/test-cli';
 
-// L'espace de travail est créé par test/integration/prepare.mjs.
+// The workspace is created by test/integration/prepare.mjs.
 export default defineConfig({
   files: 'out/integration/**/*.test.js',
   workspaceFolder: '.vscode-test/workspace',

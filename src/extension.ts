@@ -47,7 +47,7 @@ class PackageTree implements vscode.TreeDataProvider<PackageNode> {
     try {
       this.nodes = await this.load();
     } catch (e) {
-      // Une vue vide avec son message d'accueil vaut mieux qu'une erreur à chaque rafraîchissement.
+      // An empty view with its welcome message is better than an error on every refresh.
       this.nodes = [];
       if (e instanceof UserError && e.code !== 'NOT_FOUND' && e.code !== 'NO_WORKSPACE')
         void vscode.window.showWarningMessage(`Agenteca: ${e.message}`);
@@ -76,7 +76,7 @@ class VirtualDocs implements vscode.TextDocumentContentProvider {
 }
 
 export interface ExtensionApi {
-  /** Pour les tests d'intégration. */
+  /** For the integration tests. */
   service: AhubService;
 }
 
@@ -110,7 +110,7 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
     }
   };
 
-  /** Plan → lecture par l'utilisateur → accord → application du plan exact. */
+  /** Plan → read by the user → agreement → application of the exact plan. */
   const change = async (kind: ChangeKind, packages: string[], title: string): Promise<void> => {
     let tools: Tool[] | undefined;
     let overwrite: string[] = [];
@@ -167,7 +167,7 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
       );
       if (answer !== t('Overwrite these files')) return;
       overwrite = conflicts;
-      // Le plan change avec cet accord : il est recalculé, et c'est ce nouveau plan qui sera appliqué.
+      // The plan changes with this agreement: it is computed again, and that new plan is the one applied.
       plan = await compute();
       docs.set('Agenteca plan.txt', planText(plan));
     }
@@ -196,7 +196,7 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
       { location: vscode.ProgressLocation.Window, title: t('Agenteca: reading the package…') },
       () => service.info(ref),
     );
-    // Affiché comme texte Markdown, pas comme aperçu rendu : le contenu d'un paquet n'est pas de confiance.
+    // Shown as Markdown text, not as a rendered preview: the content of a package is not trusted.
     const uri = docs.set(`${info.name}.md`, packageMarkdown(info));
     await vscode.window.showTextDocument(uri, { preview: true });
   };
@@ -281,5 +281,5 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
 }
 
 export function deactivate(): void {
-  // Rien à libérer : tout est dans context.subscriptions.
+  // Nothing to release: everything is in context.subscriptions.
 }

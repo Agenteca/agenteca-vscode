@@ -62,5 +62,7 @@
   "{0} point(s) to check.": "जाँचने योग्य {0} बिंदु।",
   "{0} removed": "{0} हटाई गईं",
   "{0}. Setting: \"agenteca.ahubPath\".": "{0}। सेटिंग: \"agenteca.ahubPath\"।",
-  "{0}?": "{0}?"
+  "{0}?": "{0}?",
+  "← edited by hand": "← हाथ से बदली गई",
+  "← edited by hand or unmanaged": "← हाथ से बदली गई या अप्रबंधित"
 }

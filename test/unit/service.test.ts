@@ -37,7 +37,7 @@ async function project(): Promise<{ cwd: string; service: AhubService }> {
 }
 
 describe('service (vraie CLI ahub)', () => {
-  it('planifie puis applique, et relit l’état', async () => {
+  it('plans then applies, and reads the state again', async () => {
     const { cwd, service } = await project();
     expect(await service.version()).toBe('0.1.0');
     expect(await service.installed()).toEqual([]);
@@ -58,9 +58,9 @@ describe('service (vraie CLI ahub)', () => {
     ).toContain('Bonjour.');
   });
 
-  it('traduit les erreurs en messages pour l’utilisateur', async () => {
+  it('turns errors into messages for the user', async () => {
     const { service } = await project();
-    // Sans outil cible détecté ni choisi : l'extension propose alors de choisir.
+    // With no target tool detected or chosen: the extension then offers to choose.
     await expect(service.plan('add', ['./local-pkg'])).rejects.toMatchObject({ code: 'NO_TARGET' });
     await expect(service.plan('remove', ['absent'], ['claude'])).rejects.toBeInstanceOf(UserError);
     const noFolder = new AhubService(() => ({ ahubPath: 'ahub', tools: [], cwd: undefined }));

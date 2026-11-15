@@ -7,13 +7,13 @@ import type {
 } from '@agenteca/cli/client';
 import { t } from './l10n';
 
-/** Logique pure, sans dépendance à l'API de VS Code : testable telle quelle. */
+/** Pure logic, with no dependency on the VS Code API: testable as is. */
 
 export type NodeKind = 'installed' | 'update' | 'catalog';
 
 export interface PackageNode {
   kind: NodeKind;
-  /** Référence passée à ahub (identité, nom@registre…). */
+  /** Reference passed to ahub (identity, name@registry…). */
   ref: string;
   label: string;
   description: string;
@@ -68,7 +68,7 @@ export function catalogNodes(results: SearchResultData[]): PackageNode[] {
 
 const SIGN: Record<string, string> = { create: '+', update: '~', conflict: '!', remove: '-' };
 
-/** Plan en texte brut, montré avant toute écriture. */
+/** Plan as plain text, shown before anything is written. */
 export function planText(plan: ChangeData): string {
   const lines: string[] = [
     t('Scope: {0} — tools: {1}', [plan.scope === 'user' ? t('user') : t('project'), plan.targets.join(', ')]),
@@ -87,7 +87,7 @@ export function planText(plan: ChangeData): string {
     lines.push('', t('FILES WRITTEN ({0})', [files.length]));
     for (const f of files)
       lines.push(
-        `  ${SIGN[f.action]} ${f.path}${f.action === 'conflict' ? '   ← modifié à la main ou non géré' : ''}`,
+        `  ${SIGN[f.action]} ${f.path}${f.action === 'conflict' ? `   ${t('← edited by hand or unmanaged')}` : ''}`,
       );
   }
   const removals = plan.removals.filter((r) => r.action !== 'missing');
@@ -95,7 +95,7 @@ export function planText(plan: ChangeData): string {
     lines.push('', t('FILES REMOVED ({0})', [removals.length]));
     for (const r of removals)
       lines.push(
-        `  ${r.action === 'conflict' ? '!' : '-'} ${r.path}${r.action === 'conflict' ? '   ← modifié à la main' : ''}`,
+        `  ${r.action === 'conflict' ? '!' : '-'} ${r.path}${r.action === 'conflict' ? `   ${t('← edited by hand')}` : ''}`,
       );
   }
   const configs = plan.configFiles.filter((c) => c.action !== 'unchanged');
@@ -120,7 +120,7 @@ export function planText(plan: ChangeData): string {
   return lines.join('\n');
 }
 
-/** Résumé court pour la boîte de confirmation. */
+/** Short summary for the confirmation dialog. */
 export function planSummary(plan: ChangeData): string {
   const written =
     plan.files.filter((f) => f.action !== 'unchanged').length +
@@ -155,13 +155,13 @@ export function fileConflicts(plan: ChangeData): string[] {
 }
 
 function fence(text: string): string {
-  // Une clôture plus longue que toute suite d'accents graves du contenu : le texte ne peut pas en sortir.
+  // A fence longer than any run of backticks in the content: the text cannot escape it.
   const longest = Math.max(2, ...(text.match(/`+/g) ?? []).map((m) => m.length));
   const marks = '`'.repeat(longest + 1);
   return `${marks}\n${text.replace(/\n$/, '')}\n${marks}`;
 }
 
-/** Fiche d'un paquet en Markdown : ce qu'il contient, avant de l'installer. */
+/** Card of a package in Markdown: what it contains, before installing it. */
 export function packageMarkdown(info: InfoData): string {
   const c = info.contents;
   const lines: string[] = [`# ${info.name}${info.version ? ` ${info.version}` : ''}`, ''];

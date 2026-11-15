@@ -71,7 +71,7 @@ const plan = (over: Partial<ChangeData> = {}): ChangeData => ({
   ...over,
 });
 
-/** Les attentes de ce fichier sont en français : le modèle est traduit par le catalogue livré avec l'extension. */
+/** The expectations of this file are in French: the model is translated by the bundle shipped with the extension. */
 const fr = JSON.parse(
   readFileSync(fileURLToPath(new URL('../../l10n/bundle.l10n.fr.json', import.meta.url)), 'utf8'),
 ) as Record<string, string>;
@@ -82,8 +82,8 @@ beforeAll(() =>
 );
 afterAll(() => setTranslator(undefined));
 
-describe('modèle des vues', () => {
-  it('ne montre que les paquets directs, avec version et outils', () => {
+describe('model of the views', () => {
+  it('shows only direct packages, with version and tools', () => {
     const nodes = installedNodes([
       {
         identity: 'github.com/acme/demo',
@@ -122,7 +122,7 @@ describe('modèle des vues', () => {
     expect(nodes[0]!.tooltip).toContain('3 fichier(s) géré(s)');
   });
 
-  it('liste seulement les paquets réellement à mettre à jour', () => {
+  it('lists only the packages that really need an update', () => {
     const nodes = updateNodes([
       {
         identity: 'i1',
@@ -146,7 +146,7 @@ describe('modèle des vues', () => {
     expect(nodes.map((n) => [n.label, n.description])).toEqual([['a', 'v1.0.0 → v1.1.0']]);
   });
 
-  it('désigne un paquet du catalogue par nom@registre', () => {
+  it('designates a catalog package as name@registry', () => {
     const [n] = catalogNodes([
       {
         name: 'demo',
@@ -162,8 +162,8 @@ describe('modèle des vues', () => {
   });
 });
 
-describe('plan montré avant application', () => {
-  it('liste fichiers, configuration, exécutables et scan', () => {
+describe('plan shown before application', () => {
+  it('lists files, configuration, executables and scan', () => {
     const text = planText(plan());
     expect(text).toContain('+ demo 1.0.0  (github.com/acme/demo)');
     expect(text).toContain('+ .claude/skills/s/SKILL.md');
@@ -177,7 +177,7 @@ describe('plan montré avant application', () => {
     expect(text).toContain('SCAN DE SÉCURITÉ : 0 critique(s)');
   });
 
-  it('résume en une ligne et repère les conflits de fichiers', () => {
+  it('sums up in one line and spots file conflicts', () => {
     expect(planSummary(plan())).toBe(
       '3 fichier(s) écrit(s) ou modifié(s) · 1 retiré(s) · 1 hook(s) · 1 serveur(s) MCP · scan : rien à signaler',
     );
@@ -213,7 +213,7 @@ describe('plan montré avant application', () => {
   });
 });
 
-describe('fiche d’un paquet', () => {
+describe('card of a package', () => {
   const info: InfoData = {
     dep: 'acme/demo#v1.0.0',
     identity: 'github.com/acme/demo',
@@ -239,7 +239,7 @@ describe('fiche d’un paquet', () => {
     scan: scanOk,
   };
 
-  it('présente le contenu et les éléments exécutables', () => {
+  it('presents the content and the executable items', () => {
     const md = packageMarkdown(info);
     expect(md).toContain('# demo 1.0.0');
     expect(md).toContain('- Hooks (commandes lancées automatiquement) : h');
@@ -248,13 +248,13 @@ describe('fiche d’un paquet', () => {
     expect(md).toContain('_2048 octets, non affiché._');
   });
 
-  it('enferme le texte d’un fichier dans une clôture qu’il ne peut pas fermer', () => {
+  it('wraps the text of a file in a fence it cannot close', () => {
     const md = packageMarkdown(info);
-    // Le fichier contient une suite de 4 accents graves : la clôture en compte 5.
+    // The file contains a run of 4 backticks: the fence has 5.
     expect(md).toContain('`````\nAvant\n```\ncode\n```\n````\nfin\n`````');
   });
 
-  it('met en avant un problème critique', () => {
+  it('highlights a critical problem', () => {
     const md = packageMarkdown({
       ...info,
       scan: {

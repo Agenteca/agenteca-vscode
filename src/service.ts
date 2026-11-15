@@ -6,11 +6,11 @@ export interface ServiceConfig {
   tools: Tool[];
   cwd: string | undefined;
   env?: NodeJS.ProcessEnv;
-  /** Arguments préfixes (tests : `node` + chemin du binaire). */
+  /** Prefix arguments (tests: `node` + path of the binary). */
   binArgs?: string[];
 }
 
-/** Erreur à montrer telle quelle à l'utilisateur. */
+/** Error to show as is to the user. */
 export class UserError extends Error {
   constructor(
     message: string,
@@ -23,7 +23,7 @@ export class UserError extends Error {
 
 export type ChangeKind = 'add' | 'update' | 'remove';
 
-/** Passerelle vers la CLI : aucune logique d'installation ici. */
+/** Gateway to the CLI: no installation logic here. */
 export class AhubService {
   constructor(private readonly config: () => ServiceConfig) {}
 
@@ -78,7 +78,7 @@ export class AhubService {
     };
   }
 
-  /** Calcule le plan. Rien n'est écrit. */
+  /** Computes the plan. Nothing is written. */
   async plan(
     kind: ChangeKind,
     packages: string[],
@@ -89,7 +89,7 @@ export class AhubService {
     return this.data(env);
   }
 
-  /** Applique le plan exact que l'utilisateur vient d'approuver. */
+  /** Applies the exact plan that the user has just approved. */
   async apply(
     kind: ChangeKind,
     packages: string[],

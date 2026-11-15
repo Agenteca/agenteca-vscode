@@ -1,5 +1,5 @@
-// Prépare un espace de travail jetable pour les tests dans un vrai VS Code :
-// un paquet local à installer, et un lanceur `ahub` pointant sur la CLI de l'espace de travail npm.
+// Prepares a throwaway workspace for the tests in a real VS Code:
+// a local package to install, and an `ahub` launcher pointing to the CLI of the npm workspace.
 import { chmodSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -30,4 +30,4 @@ writeFileSync(
   path.join(ws, '.vscode', 'settings.json'),
   JSON.stringify({ 'agenteca.ahubPath': launcher, 'agenteca.tools': ['claude'] }, null, 2),
 );
-console.log(`Espace de test prêt : ${ws}`);
+console.log(`Test workspace ready: ${ws}`);

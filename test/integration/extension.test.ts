@@ -3,21 +3,21 @@ import { existsSync } from 'node:fs';
 import * as path from 'node:path';
 import * as vscode from 'vscode';
 
-/** Tests dans un vrai VS Code. Les boîtes de dialogue modales ne sont pas automatisables : le parcours d'installation complet est testé par le service. */
+/** Tests in a real VS Code. Modal dialogs cannot be automated: the full installation path is tested through the service. */
 suite('extension Agenteca', () => {
   const workspace = vscode.workspace.workspaceFolders![0]!.uri.fsPath;
   let api: { service: any };
 
   suiteSetup(async () => {
     const ext = vscode.extensions.getExtension('agenteca.agenteca');
-    assert.ok(ext, 'extension introuvable');
+    assert.ok(ext, 'extension not found');
     api = await ext.activate();
   });
 
-  test('déclare ses commandes et ses vues', async () => {
+  test('declares its commands and its views', async () => {
     const commands = await vscode.commands.getCommands(true);
     for (const c of ['refresh', 'search', 'install', 'showPackage', 'update', 'updateAll', 'remove']) {
-      assert.ok(commands.includes(`agenteca.${c}`), `commande agenteca.${c} absente`);
+      assert.ok(commands.includes(`agenteca.${c}`), `command agenteca.${c} missing`);
     }
     const manifest = vscode.extensions.getExtension('agenteca.agenteca')!.packageJSON;
     assert.deepStrictEqual(
@@ -26,12 +26,12 @@ suite('extension Agenteca', () => {
     );
   });
 
-  test('lit ses réglages et parle à la CLI ahub', async () => {
+  test('reads its settings and talks to the ahub CLI', async () => {
     assert.strictEqual(await api.service.version(), '0.1.0');
     assert.deepStrictEqual(await api.service.installed(), []);
   });
 
-  test('montre le contenu d’un paquet dans un document en lecture seule', async () => {
+  test('shows the content of a package in a read-only document', async () => {
     await vscode.commands.executeCommand('agenteca.showPackage', {
       kind: 'catalog',
       ref: './local-pkg',
@@ -40,18 +40,18 @@ suite('extension Agenteca', () => {
       tooltip: '',
     });
     const doc = vscode.window.activeTextEditor?.document;
-    assert.ok(doc, 'aucun document ouvert');
+    assert.ok(doc, 'no document open');
     assert.strictEqual(doc.uri.scheme, 'agenteca');
     assert.ok(doc.getText().includes('# local-pkg 1.0.0'));
     assert.ok(doc.getText().includes('Bonjour depuis le test.'));
     assert.strictEqual(doc.isUntitled, false);
   });
 
-  test('installe puis retire un paquet par le service de l’extension', async () => {
+  test("installs then removes a package through the extension's service", async () => {
     const plan = await api.service.plan('add', ['./local-pkg']);
-    assert.deepStrictEqual(plan.targets, ['claude'], 'le réglage agenteca.tools doit être appliqué');
+    assert.deepStrictEqual(plan.targets, ['claude'], 'the agenteca.tools setting must be applied');
     const skill = path.join(workspace, '.claude', 'skills', 'hello', 'SKILL.md');
-    assert.strictEqual(existsSync(skill), false, 'un plan ne doit rien écrire');
+    assert.strictEqual(existsSync(skill), false, 'a plan must write nothing');
     await api.service.apply('add', ['./local-pkg'], plan.planHash);
     assert.strictEqual(existsSync(skill), true);
     await vscode.commands.executeCommand('agenteca.refresh');

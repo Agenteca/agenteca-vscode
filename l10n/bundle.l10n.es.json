@@ -62,5 +62,7 @@
   "{0} point(s) to check.": "{0} punto(s) por comprobar.",
   "{0} removed": "{0} quitado(s)",
   "{0}. Setting: \"agenteca.ahubPath\".": "{0}. Ajuste: «agenteca.ahubPath».",
-  "{0}?": "¿{0}?"
+  "{0}?": "¿{0}?",
+  "← edited by hand": "← modificado a mano",
+  "← edited by hand or unmanaged": "← modificado a mano o no gestionado"
 }

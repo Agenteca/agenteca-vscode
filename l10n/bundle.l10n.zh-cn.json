@@ -62,5 +62,7 @@
   "{0} point(s) to check.": "{0} 处需要核实。",
   "{0} removed": "移除 {0} 个",
   "{0}. Setting: \"agenteca.ahubPath\".": "{0}。设置项：“agenteca.ahubPath”。",
-  "{0}?": "{0}？"
+  "{0}?": "{0}？",
+  "← edited by hand": "← 被手动修改过",
+  "← edited by hand or unmanaged": "← 被手动修改过或未受管理"
 }

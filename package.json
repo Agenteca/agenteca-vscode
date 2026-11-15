@@ -5,6 +5,11 @@
   "version": "0.1.0",
   "publisher": "agenteca",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/agenteca/agenteca-vscode#readme",
+  "bugs": {
+    "url": "https://github.com/agenteca/agenteca-vscode/issues"
+  },
+  "pricing": "Free",
   "private": true,
   "repository": {
     "type": "git",

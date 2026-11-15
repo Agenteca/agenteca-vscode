@@ -1,0 +1,18 @@
+{
+  "description": "Claude Code, Codex, GitHub Copilot और Cursor के लिए AI एजेंट पैकेज ब्राउज़ करें, इंस्टॉल करें और अपडेट करें।",
+  "view.installed": "इंस्टॉल किए गए",
+  "view.updates": "अपडेट",
+  "view.catalog": "कैटलॉग",
+  "welcome.installed": "इस प्रोजेक्ट में कोई पैकेज इंस्टॉल नहीं है।\n[पैकेज इंस्टॉल करें](command:agenteca.install)\n[कैटलॉग में खोजें](command:agenteca.search)",
+  "welcome.updates": "सभी पैकेज अद्यतन हैं।",
+  "welcome.catalog": "कैटलॉग खाली है या कोई रजिस्ट्री कॉन्फ़िगर नहीं है।\nटर्मिनल में रजिस्ट्री जोड़ें: `ahub registry add <url>`\n[रीफ़्रेश करें](command:agenteca.refresh)",
+  "command.refresh": "रीफ़्रेश करें",
+  "command.search": "कैटलॉग में खोजें…",
+  "command.install": "पैकेज इंस्टॉल करें…",
+  "command.showPackage": "सामग्री देखें",
+  "command.update": "अपडेट करें",
+  "command.updateAll": "सभी अपडेट करें",
+  "command.remove": "हटाएँ",
+  "config.ahubPath": "`ahub` कमांड का पथ। डिफ़ॉल्ट रूप से इसे `PATH` में खोजा जाता है। इंस्टॉलेशन: `npm install -g @agenteca/cli`।",
+  "config.tools": "इंस्टॉल के समय लक्ष्य टूल। खाली: `apm.yml` में घोषित टूल, अन्यथा प्रोजेक्ट में पाए गए टूल।"
+}

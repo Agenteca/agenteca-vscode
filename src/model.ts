@@ -5,6 +5,7 @@ import type {
   OutdatedPackageData,
   SearchResultData,
 } from '@agenteca/cli/client';
+import { t } from './l10n';
 
 /** Logique pure, sans dépendance à l'API de VS Code : testable telle quelle. */
 
@@ -29,7 +30,7 @@ export function installedNodes(packages: InstalledPackageData[]): PackageNode[] 
         ref: p.source === 'local' ? p.identity.replace(/^local:/, '') : p.identity,
         label: p.name,
         description: [version, p.targets.join(', ')].filter(Boolean).join(' · '),
-        tooltip: `${p.identity}\n${p.files.length + p.mergedFiles.length} fichier(s) géré(s)`,
+        tooltip: t('{0}\n{1} managed file(s)', [p.identity, p.files.length + p.mergedFiles.length]),
       };
     });
 }
@@ -42,7 +43,12 @@ export function updateNodes(packages: OutdatedPackageData[]): PackageNode[] {
       ref: p.identity,
       label: p.name,
       description: `${p.current} → ${p.wanted}`,
-      tooltip: `${p.identity}\nInstallé : ${p.current}\nMise à jour possible : ${p.wanted}\nDernière version : ${p.latest}`,
+      tooltip: t('{0}\nInstalled: {1}\nUpdate available: {2}\nLatest version: {3}', [
+        p.identity,
+        p.current,
+        p.wanted,
+        p.latest,
+      ]),
     }));
 }
 
@@ -53,9 +59,9 @@ export function catalogNodes(results: SearchResultData[]): PackageNode[] {
     label: r.name,
     description: [r.version, r.tools?.join(', ')].filter(Boolean).join(' · '),
     tooltip: [
-      r.description ?? 'Pas de description.',
-      `Registre : ${r.registry}`,
-      `Source : ${r.source}`,
+      r.description ?? t('No description.'),
+      t('Registry: {0}', [r.registry]),
+      t('Source: {0}', [r.source]),
     ].join('\n'),
   }));
 }
@@ -65,7 +71,7 @@ const SIGN: Record<string, string> = { create: '+', update: '~', conflict: '!', 
 /** Plan en texte brut, montré avant toute écriture. */
 export function planText(plan: ChangeData): string {
   const lines: string[] = [
-    `Portée : ${plan.scope === 'user' ? 'utilisateur' : 'projet'} — outils : ${plan.targets.join(', ')}`,
+    t('Scope: {0} — tools: {1}', [plan.scope === 'user' ? t('user') : t('project'), plan.targets.join(', ')]),
   ];
   const changed = plan.packages.filter((p) => p.change !== 'unchanged');
   if (changed.length > 0 || plan.removedPackages.length > 0) {
@@ -78,7 +84,7 @@ export function planText(plan: ChangeData): string {
   }
   const files = plan.files.filter((f) => f.action !== 'unchanged');
   if (files.length > 0) {
-    lines.push('', `FICHIERS ÉCRITS (${files.length})`);
+    lines.push('', t('FILES WRITTEN ({0})', [files.length]));
     for (const f of files)
       lines.push(
         `  ${SIGN[f.action]} ${f.path}${f.action === 'conflict' ? '   ← modifié à la main ou non géré' : ''}`,
@@ -86,7 +92,7 @@ export function planText(plan: ChangeData): string {
   }
   const removals = plan.removals.filter((r) => r.action !== 'missing');
   if (removals.length > 0) {
-    lines.push('', `FICHIERS RETIRÉS (${removals.length})`);
+    lines.push('', t('FILES REMOVED ({0})', [removals.length]));
     for (const r of removals)
       lines.push(
         `  ${r.action === 'conflict' ? '!' : '-'} ${r.path}${r.action === 'conflict' ? '   ← modifié à la main' : ''}`,
@@ -94,20 +100,20 @@ export function planText(plan: ChangeData): string {
   }
   const configs = plan.configFiles.filter((c) => c.action !== 'unchanged');
   if (configs.length > 0) {
-    lines.push('', 'FICHIERS DE CONFIGURATION MODIFIÉS (seules ces entrées changent)');
-    for (const c of configs) lines.push(`  ${c.path} : ${c.changes.join(', ')}`);
+    lines.push('', t('CONFIGURATION FILES MODIFIED (only these entries change)'));
+    for (const c of configs) lines.push(`  ${c.path}: ${c.changes.join(', ')}`);
   }
   if (plan.executables.length > 0) {
-    lines.push('', 'ÉLÉMENTS EXÉCUTABLES — des commandes seront lancées sur cette machine');
+    lines.push('', t('EXECUTABLE ITEMS — commands will be run on this machine'));
     for (const e of plan.executables)
       lines.push(
-        `  ${e.kind === 'hook' ? 'hook' : 'serveur MCP'} ${e.name} [${e.target}, ${e.detail}] : ${e.command}`,
+        `  ${e.kind === 'hook' ? 'hook' : t('MCP server')} ${e.name} [${e.target}, ${e.detail}]: ${e.command}`,
       );
   }
   const s = plan.scan.summary;
   lines.push(
     '',
-    `SCAN DE SÉCURITÉ : ${s.critical} critique(s), ${s.warning} avertissement(s), ${s.info} information(s)`,
+    t('SECURITY SCAN: {0} critical, {1} warning(s), {2} informational', [s.critical, s.warning, s.info]),
   );
   for (const f of plan.scan.findings)
     lines.push(`  [${f.severity}] ${f.ruleId} ${f.path}:${f.line} — ${f.message}`);
@@ -120,16 +126,16 @@ export function planSummary(plan: ChangeData): string {
     plan.files.filter((f) => f.action !== 'unchanged').length +
     plan.configFiles.filter((c) => c.action !== 'unchanged').length;
   const removed = plan.removals.filter((r) => r.action !== 'missing').length;
-  const parts = [`${written} fichier(s) écrit(s) ou modifié(s)`, `${removed} retiré(s)`];
+  const parts = [t('{0} file(s) written or modified', [written]), t('{0} removed', [removed])];
   const hooks = plan.executables.filter((e) => e.kind === 'hook').length;
   const servers = plan.executables.filter((e) => e.kind === 'mcp').length;
   if (hooks > 0) parts.push(`${hooks} hook(s)`);
-  if (servers > 0) parts.push(`${servers} serveur(s) MCP`);
+  if (servers > 0) parts.push(t('{0} MCP server(s)', [servers]));
   const s = plan.scan.summary;
   parts.push(
     s.critical + s.warning === 0
-      ? 'scan : rien à signaler'
-      : `scan : ${s.critical} critique(s), ${s.warning} avertissement(s)`,
+      ? t('scan: nothing to report')
+      : t('scan: {0} critical, {1} warning(s)', [s.critical, s.warning]),
   );
   return parts.join(' · ');
 }
@@ -160,40 +166,45 @@ export function packageMarkdown(info: InfoData): string {
   const c = info.contents;
   const lines: string[] = [`# ${info.name}${info.version ? ` ${info.version}` : ''}`, ''];
   if (info.description) lines.push(info.description, '');
-  lines.push(`- Source : \`${info.dep}\``);
-  if (info.license) lines.push(`- Licence : ${info.license}`);
-  if (info.commit) lines.push(`- Révision : \`${info.commit}\``);
+  lines.push(t('- Source: `{0}`', [info.dep]));
+  if (info.license) lines.push(t('- License: {0}', [info.license]));
+  if (info.commit) lines.push(t('- Revision: `{0}`', [info.commit]));
   const s = info.scan.summary;
-  lines.push('', '## Contrôle de sécurité', '');
-  if (info.scan.findings.length === 0) lines.push('Rien à signaler.');
+  lines.push('', t('## Security check'), '');
+  if (info.scan.findings.length === 0) lines.push(t('Nothing to report.'));
   else {
     lines.push(
       info.scan.blocked
-        ? '**Problème critique : ahub refuse d’installer ce paquet sans accord explicite.**'
-        : `${s.warning + s.info} point(s) à vérifier.`,
+        ? t('**Critical problem: ahub refuses to install this package without explicit agreement.**')
+        : t('{0} point(s) to check.', [s.warning + s.info]),
       '',
     );
     for (const f of info.scan.findings)
-      lines.push(`- **${f.severity}** \`${f.ruleId}\` — ${f.path}, ligne ${f.line} : ${f.message}`);
+      lines.push(
+        t('- **{0}** `{1}` — {2}, line {3}: {4}', [f.severity, f.ruleId, f.path, f.line, f.message]),
+      );
   }
-  lines.push('', '## Ce que ce paquet installe', '');
+  lines.push('', t('## What this package installs'), '');
   const section = (title: string, items: string[]): void => {
-    if (items.length > 0) lines.push(`- ${title} : ${items.join(', ')}`);
+    if (items.length > 0) lines.push(t('- {0}: {1}', [title, items.join(', ')]));
   };
-  section('Skills', c.skills);
-  section('Agents', c.agents);
-  section('Commandes', c.commands);
-  section('Instructions', c.instructions);
-  section('Hooks (commandes lancées automatiquement)', c.hooks);
+  section(t('Skills'), c.skills);
+  section(t('Agents'), c.agents);
+  section(t('Commands'), c.commands);
+  section(t('Instructions'), c.instructions);
+  section(t('Hooks (commands run automatically)'), c.hooks);
   for (const m of info.mcpServers)
     lines.push(
-      `- Serveur MCP **${m.name}** : \`${m.command ? [m.command, ...(m.args ?? [])].join(' ') : (m.url ?? '')}\``,
+      t('- MCP server **{0}**: `{1}`', [
+        m.name,
+        m.command ? [m.command, ...(m.args ?? [])].join(' ') : (m.url ?? ''),
+      ]),
     );
-  section('Dépendances', info.dependencies);
-  lines.push('', `## Fichiers (${info.files.length})`, '');
+  section(t('Dependencies'), info.dependencies);
+  lines.push('', t('## Files ({0})', [info.files.length]), '');
   for (const f of info.files) {
     lines.push(`### ${f.path}`, '');
-    lines.push(f.text !== undefined ? fence(f.text) : `_${f.size} octets, non affiché._`, '');
+    lines.push(f.text !== undefined ? fence(f.text) : t('_{0} bytes, not shown._', [f.size]), '');
   }
   return lines.join('\n');
 }

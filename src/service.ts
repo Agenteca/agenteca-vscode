@@ -1,4 +1,5 @@
 import { AhubClient, AhubClientError, type ChangeData, type Envelope, type Tool } from '@agenteca/cli/client';
+import { t } from './l10n';
 
 export interface ServiceConfig {
   ahubPath: string;
@@ -28,7 +29,7 @@ export class AhubService {
 
   private client(): AhubClient {
     const c = this.config();
-    if (!c.cwd) throw new UserError('Ouvrez un dossier de projet pour utiliser Agenteca.', 'NO_WORKSPACE');
+    if (!c.cwd) throw new UserError(t('Open a project folder to use Agenteca.'), 'NO_WORKSPACE');
     return new AhubClient({
       bin: c.ahubPath || 'ahub',
       cwd: c.cwd,
@@ -42,14 +43,14 @@ export class AhubService {
       return await run(this.client());
     } catch (e) {
       if (e instanceof AhubClientError)
-        throw new UserError(`${e.message}. Réglage : « agenteca.ahubPath ».`, 'AHUB_UNAVAILABLE');
+        throw new UserError(t('{0}. Setting: "agenteca.ahubPath".', [e.message]), 'AHUB_UNAVAILABLE');
       throw e;
     }
   }
 
   private data<T>(env: Envelope<T>): T {
     if (!env.ok || env.data === null)
-      throw new UserError(env.error?.message ?? 'Erreur inconnue', env.error?.code ?? 'INTERNAL');
+      throw new UserError(env.error?.message ?? t('Unknown error'), env.error?.code ?? 'INTERNAL');
     return env.data;
   }
 
@@ -99,7 +100,7 @@ export class AhubService {
     const env = await this.unwrap((c) => c.apply(kind, packages, planHash, this.options(tools, overwrite)));
     if (!env.ok)
       throw new UserError(
-        env.error?.message ?? 'Erreur inconnue',
+        env.error?.message ?? t('Unknown error'),
         env.error?.code ?? 'INTERNAL',
         env.data ?? undefined,
       );

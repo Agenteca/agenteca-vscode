@@ -1,0 +1,18 @@
+{
+  "description": "Explore, instale y actualice paquetes de agentes de IA para Claude Code, Codex, GitHub Copilot y Cursor.",
+  "view.installed": "Instalados",
+  "view.updates": "Actualizaciones",
+  "view.catalog": "Catálogo",
+  "welcome.installed": "Ningún paquete instalado en este proyecto.\n[Instalar un paquete](command:agenteca.install)\n[Buscar en el catálogo](command:agenteca.search)",
+  "welcome.updates": "Todos los paquetes están al día.",
+  "welcome.catalog": "El catálogo está vacío o no hay ningún registro configurado.\nAñada un registro en un terminal: `ahub registry add <url>`\n[Actualizar](command:agenteca.refresh)",
+  "command.refresh": "Actualizar",
+  "command.search": "Buscar en el catálogo…",
+  "command.install": "Instalar un paquete…",
+  "command.showPackage": "Ver el contenido",
+  "command.update": "Actualizar",
+  "command.updateAll": "Actualizar todo",
+  "command.remove": "Quitar",
+  "config.ahubPath": "Ruta del comando `ahub`. Por defecto se busca en el `PATH`. Instalación: `npm install -g @agenteca/cli`.",
+  "config.tools": "Herramientas de destino en la instalación. Vacío: las declaradas en `apm.yml`; si no, las detectadas en el proyecto."
+}

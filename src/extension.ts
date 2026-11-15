@@ -12,6 +12,7 @@ import {
   updateNodes,
 } from './model';
 import { AhubService, type ChangeKind, UserError } from './service';
+import { ahubLanguage, setTranslator, t } from './l10n';
 
 const TOOLS: Array<{ id: Tool; label: string }> = [
   { id: 'claude', label: 'Claude Code' },
@@ -37,7 +38,7 @@ class PackageTree implements vscode.TreeDataProvider<PackageNode> {
     item.tooltip = node.tooltip;
     item.contextValue = `agenteca.${node.kind}`;
     item.iconPath = new vscode.ThemeIcon(node.kind === 'update' ? 'arrow-circle-up' : 'package');
-    item.command = { command: 'agenteca.showPackage', title: 'Voir le contenu', arguments: [node] };
+    item.command = { command: 'agenteca.showPackage', title: t('Show content'), arguments: [node] };
     return item;
   }
 
@@ -49,7 +50,7 @@ class PackageTree implements vscode.TreeDataProvider<PackageNode> {
       // Une vue vide avec son message d'accueil vaut mieux qu'une erreur à chaque rafraîchissement.
       this.nodes = [];
       if (e instanceof UserError && e.code !== 'NOT_FOUND' && e.code !== 'NO_WORKSPACE')
-        void vscode.window.showWarningMessage(`Agenteca : ${e.message}`);
+        void vscode.window.showWarningMessage(`Agenteca: ${e.message}`);
     }
     return this.nodes;
   }
@@ -80,12 +81,15 @@ export interface ExtensionApi {
 }
 
 export function activate(context: vscode.ExtensionContext): ExtensionApi {
+  setTranslator((message, args) => vscode.l10n.t(message, ...args));
   const service = new AhubService(() => {
     const config = vscode.workspace.getConfiguration('agenteca');
     return {
       ahubPath: config.get<string>('ahubPath', 'ahub'),
       tools: config.get<Tool[]>('tools', []),
       cwd: vscode.workspace.workspaceFolders?.[0]?.uri.fsPath,
+      // ahub answers in the language of the editor.
+      env: { ...process.env, AHUB_LANG: ahubLanguage(vscode.env.language) },
     };
   });
   const docs = new VirtualDocs();
@@ -102,7 +106,7 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
     try {
       await action();
     } catch (e) {
-      void vscode.window.showErrorMessage(`Agenteca : ${e instanceof Error ? e.message : String(e)}`);
+      void vscode.window.showErrorMessage(`Agenteca: ${e instanceof Error ? e.message : String(e)}`);
     }
   };
 
@@ -112,7 +116,10 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
     let overwrite: string[] = [];
     const compute = () =>
       vscode.window.withProgress(
-        { location: vscode.ProgressLocation.Notification, title: `Agenteca : ${title} — calcul du plan…` },
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: t('Agenteca: {0} — computing the plan…', [title]),
+        },
         () => service.plan(kind, packages, tools, overwrite),
       );
 
@@ -125,8 +132,8 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
         TOOLS.map((t) => ({ label: t.label, id: t.id })),
         {
           canPickMany: true,
-          title: 'Pour quels outils installer ?',
-          placeHolder: 'Aucun outil détecté dans ce projet',
+          title: t('Install for which tools?'),
+          placeHolder: t('No tool detected in this project'),
         },
       );
       if (!picked || picked.length === 0) return;
@@ -135,15 +142,18 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
     }
 
     if (!hasChanges(plan)) {
-      void vscode.window.showInformationMessage('Agenteca : tout est à jour, rien à faire.');
+      void vscode.window.showInformationMessage(t('Agenteca: everything is up to date, nothing to do.'));
       return;
     }
-    const uri = docs.set('Plan Agenteca.txt', planText(plan));
+    const uri = docs.set('Agenteca plan.txt', planText(plan));
     await vscode.window.showTextDocument(uri, { preview: true, preserveFocus: true });
 
     if (plan.scan.blocked) {
       void vscode.window.showErrorMessage(
-        `Agenteca : le scan de sécurité a relevé ${plan.scan.summary.critical} problème(s) critique(s). L’installation est refusée. Le détail est dans le plan affiché.`,
+        t(
+          'Agenteca: the security scan found {0} critical problem(s). Installation is refused. The details are in the plan shown.',
+          [plan.scan.summary.critical],
+        ),
         { modal: true },
       );
       return;
@@ -151,36 +161,39 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
     const conflicts = fileConflicts(plan);
     if (conflicts.length > 0) {
       const answer = await vscode.window.showWarningMessage(
-        `${conflicts.length} fichier(s) modifié(s) à la main seraient écrasés ou supprimés.`,
+        t('{0} file(s) edited by hand would be overwritten or deleted.', [conflicts.length]),
         { modal: true, detail: conflicts.join('\n') },
-        'Écraser ces fichiers',
+        t('Overwrite these files'),
       );
-      if (answer !== 'Écraser ces fichiers') return;
+      if (answer !== t('Overwrite these files')) return;
       overwrite = conflicts;
       // Le plan change avec cet accord : il est recalculé, et c'est ce nouveau plan qui sera appliqué.
       plan = await compute();
-      docs.set('Plan Agenteca.txt', planText(plan));
+      docs.set('Agenteca plan.txt', planText(plan));
     }
     const ok = await vscode.window.showWarningMessage(
-      `${title} ?`,
-      { modal: true, detail: `${planSummary(plan)}\n\nLe plan complet est ouvert dans l’éditeur.` },
-      'Appliquer',
+      t('{0}?', [title]),
+      { modal: true, detail: t('{0}\n\nThe full plan is open in the editor.', [planSummary(plan)]) },
+      t('Apply'),
     );
-    if (ok !== 'Appliquer') return;
+    if (ok !== t('Apply')) return;
 
     const done = await vscode.window.withProgress(
-      { location: vscode.ProgressLocation.Notification, title: `Agenteca : ${title}…` },
+      { location: vscode.ProgressLocation.Notification, title: `Agenteca: ${title}…` },
       () => service.apply(kind, packages, plan.planHash, tools, overwrite),
     );
     refresh();
     void vscode.window.showInformationMessage(
-      `Agenteca : ${done.result?.written.length ?? 0} fichier(s) écrit(s), ${done.result?.removed.length ?? 0} retiré(s).`,
+      t('Agenteca: {0} file(s) written, {1} removed.', [
+        done.result?.written.length ?? 0,
+        done.result?.removed.length ?? 0,
+      ]),
     );
   };
 
   const showPackage = async (ref: string): Promise<void> => {
     const info = await vscode.window.withProgress(
-      { location: vscode.ProgressLocation.Window, title: 'Agenteca : lecture du paquet…' },
+      { location: vscode.ProgressLocation.Window, title: t('Agenteca: reading the package…') },
       () => service.info(ref),
     );
     // Affiché comme texte Markdown, pas comme aperçu rendu : le contenu d'un paquet n'est pas de confiance.
@@ -202,8 +215,8 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
         const ref =
           node?.ref ??
           (await vscode.window.showInputBox({
-            title: 'Installer un paquet',
-            prompt: 'propriétaire/dépôt, propriétaire/dépôt@tag, URL git, chemin local, ou nom@registre',
+            title: t('Install a package'),
+            prompt: t('owner/repo, owner/repo@tag, git URL, local path, or name@registry'),
             placeHolder: 'acme/code-review@v1.2.0',
             ignoreFocusOut: true,
           }));
@@ -213,16 +226,16 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
     vscode.commands.registerCommand('agenteca.search', () =>
       guard(async () => {
         const query = await vscode.window.showInputBox({
-          title: 'Chercher dans le catalogue',
-          prompt: 'Mots à chercher (vide : tout le catalogue)',
+          title: t('Search the catalog'),
+          prompt: t('Words to search for (empty: the whole catalog)'),
         });
         if (query === undefined) return;
         const found = await service.search(query);
         if (found.results.length === 0) {
           void vscode.window.showInformationMessage(
             found.failures.length > 0
-              ? `Agenteca : ${found.failures.map((f) => f.message).join(' ; ')}`
-              : 'Agenteca : aucun paquet trouvé.',
+              ? `Agenteca: ${found.failures.map((f) => f.message).join('; ')}`
+              : t('Agenteca: no package found.'),
           );
           return;
         }
@@ -234,21 +247,22 @@ export function activate(context: vscode.ExtensionContext): ExtensionApi {
             detail: n.tooltip.split('\n')[0] ?? '',
             node: n,
           })),
-          { title: 'Résultats', matchOnDescription: true, matchOnDetail: true },
+          { title: t('Results'), matchOnDescription: true, matchOnDetail: true },
         );
         if (!picked) return;
-        const action = await vscode.window.showQuickPick(['Voir le contenu', 'Installer'], {
+        const action = await vscode.window.showQuickPick([t('Show content'), t('Install')], {
           title: picked.label,
         });
-        if (action === 'Voir le contenu') await showPackage(picked.node.ref);
-        else if (action === 'Installer') await change('add', [picked.node.ref], `Installer ${picked.label}`);
+        if (action === t('Show content')) await showPackage(picked.node.ref);
+        else if (action === t('Install'))
+          await change('add', [picked.node.ref], t('Install {0}', [picked.label]));
       }),
     ),
     vscode.commands.registerCommand('agenteca.update', (node?: PackageNode) =>
-      guard(async () => node && change('update', [node.ref], `Mettre à jour ${node.label}`)),
+      guard(async () => node && change('update', [node.ref], t('Update {0}', [node.label]))),
     ),
     vscode.commands.registerCommand('agenteca.updateAll', () =>
-      guard(() => change('update', [], 'Mettre à jour tous les paquets')),
+      guard(() => change('update', [], t('Update all packages'))),
     ),
     vscode.commands.registerCommand('agenteca.remove', (node?: PackageNode) =>
       guard(async () => node && change('remove', [node.ref], `Retirer ${node.label}`)),

@@ -1,5 +1,8 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { setTranslator } from '../../src/l10n';
 import type { ChangeData, InfoData } from '@agenteca/cli/client';
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   catalogNodes,
   fileConflicts,
@@ -67,6 +70,17 @@ const plan = (over: Partial<ChangeData> = {}): ChangeData => ({
   ],
   ...over,
 });
+
+/** Les attentes de ce fichier sont en français : le modèle est traduit par le catalogue livré avec l'extension. */
+const fr = JSON.parse(
+  readFileSync(fileURLToPath(new URL('../../l10n/bundle.l10n.fr.json', import.meta.url)), 'utf8'),
+) as Record<string, string>;
+beforeAll(() =>
+  setTranslator((message, args) =>
+    (fr[message] ?? message).replace(/\{(\d+)\}/g, (_, i: string) => String(args[Number(i)])),
+  ),
+);
+afterAll(() => setTranslator(undefined));
 
 describe('modèle des vues', () => {
   it('ne montre que les paquets directs, avec version et outils', () => {
@@ -157,9 +171,9 @@ describe('plan montré avant application', () => {
     expect(text).not.toContain('.claude/x.md');
     expect(text).toContain('- .claude/old.md');
     expect(text).not.toContain('gone.md');
-    expect(text).toContain('.mcp.json : + mcpServers.m');
-    expect(text).toContain('hook h [claude, Stop] : echo fin');
-    expect(text).toContain('serveur MCP m [claude, stdio] : npx -y srv');
+    expect(text).toContain('.mcp.json: + mcpServers.m');
+    expect(text).toContain('hook h [claude, Stop]: echo fin');
+    expect(text).toContain('serveur MCP m [claude, stdio]: npx -y srv');
     expect(text).toContain('SCAN DE SÉCURITÉ : 0 critique(s)');
   });
 

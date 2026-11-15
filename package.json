@@ -1,7 +1,7 @@
 {
   "name": "agenteca",
   "displayName": "Agenteca",
-  "description": "Parcourir, installer et mettre à jour des paquets d'agents IA pour Claude Code, Codex, GitHub Copilot et Cursor.",
+  "description": "%description%",
   "version": "0.1.0",
   "publisher": "agenteca",
   "license": "Apache-2.0",
@@ -44,72 +44,72 @@
       "agenteca": [
         {
           "id": "agenteca.installed",
-          "name": "Installés"
+          "name": "%view.installed%"
         },
         {
           "id": "agenteca.updates",
-          "name": "Mises à jour"
+          "name": "%view.updates%"
         },
         {
           "id": "agenteca.catalog",
-          "name": "Catalogue"
+          "name": "%view.catalog%"
         }
       ]
     },
     "viewsWelcome": [
       {
         "view": "agenteca.installed",
-        "contents": "Aucun paquet installé dans ce projet.\n[Installer un paquet](command:agenteca.install)\n[Chercher dans le catalogue](command:agenteca.search)"
+        "contents": "%welcome.installed%"
       },
       {
         "view": "agenteca.updates",
-        "contents": "Tous les paquets sont à jour."
+        "contents": "%welcome.updates%"
       },
       {
         "view": "agenteca.catalog",
-        "contents": "Le catalogue est vide ou aucun registre n'est configuré.\nAjoutez un registre dans un terminal : `ahub registry add <url>`\n[Actualiser](command:agenteca.refresh)"
+        "contents": "%welcome.catalog%"
       }
     ],
     "commands": [
       {
         "command": "agenteca.refresh",
-        "title": "Actualiser",
+        "title": "%command.refresh%",
         "category": "Agenteca",
         "icon": "$(refresh)"
       },
       {
         "command": "agenteca.search",
-        "title": "Chercher dans le catalogue…",
+        "title": "%command.search%",
         "category": "Agenteca",
         "icon": "$(search)"
       },
       {
         "command": "agenteca.install",
-        "title": "Installer un paquet…",
+        "title": "%command.install%",
         "category": "Agenteca",
         "icon": "$(add)"
       },
       {
         "command": "agenteca.showPackage",
-        "title": "Voir le contenu",
+        "title": "%command.showPackage%",
         "category": "Agenteca",
         "icon": "$(eye)"
       },
       {
         "command": "agenteca.update",
-        "title": "Mettre à jour",
+        "title": "%command.update%",
         "category": "Agenteca",
         "icon": "$(arrow-up)"
       },
       {
         "command": "agenteca.updateAll",
-        "title": "Tout mettre à jour",
+        "title": "%command.updateAll%",
         "category": "Agenteca",
         "icon": "$(arrow-up)"
       },
       {
         "command": "agenteca.remove",
-        "title": "Retirer",
+        "title": "%command.remove%",
         "category": "Agenteca",
         "icon": "$(trash)"
       }
@@ -181,7 +181,7 @@
           "type": "string",
           "default": "ahub",
           "scope": "machine-overridable",
-          "markdownDescription": "Chemin de la commande `ahub`. Par défaut, elle est cherchée dans le `PATH`. Installation : `npm install -g @agenteca/cli`."
+          "markdownDescription": "%config.ahubPath%"
         },
         "agenteca.tools": {
           "type": "array",
@@ -196,7 +196,7 @@
           },
           "default": [],
           "uniqueItems": true,
-          "markdownDescription": "Outils visés à l'installation. Vide : ceux déclarés dans `apm.yml`, sinon ceux détectés dans le projet."
+          "markdownDescription": "%config.tools%"
         }
       }
     }
@@ -233,5 +233,6 @@
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.0",
     "vitest": "^2.1.8"
-  }
+  },
+  "l10n": "./l10n"
 }

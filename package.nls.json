@@ -1,0 +1,18 @@
+{
+  "description": "Browse, install and update AI agent packages for Claude Code, Codex, GitHub Copilot and Cursor.",
+  "view.installed": "Installed",
+  "view.updates": "Updates",
+  "view.catalog": "Catalog",
+  "welcome.installed": "No package installed in this project.\n[Install a package](command:agenteca.install)\n[Search the catalog](command:agenteca.search)",
+  "welcome.updates": "All packages are up to date.",
+  "welcome.catalog": "The catalog is empty or no registry is configured.\nAdd a registry in a terminal: `ahub registry add <url>`\n[Refresh](command:agenteca.refresh)",
+  "command.refresh": "Refresh",
+  "command.search": "Search the Catalog…",
+  "command.install": "Install a Package…",
+  "command.showPackage": "Show Content",
+  "command.update": "Update",
+  "command.updateAll": "Update All",
+  "command.remove": "Remove",
+  "config.ahubPath": "Path of the `ahub` command. By default it is looked up in the `PATH`. Installation: `npm install -g @agenteca/cli`.",
+  "config.tools": "Target tools at installation. Empty: those declared in `apm.yml`, otherwise those detected in the project."
+}

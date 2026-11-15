@@ -1,0 +1,18 @@
+{
+  "description": "浏览、安装和更新适用于 Claude Code、Codex、GitHub Copilot 和 Cursor 的 AI 代理包。",
+  "view.installed": "已安装",
+  "view.updates": "更新",
+  "view.catalog": "目录",
+  "welcome.installed": "此项目中未安装任何包。\n[安装包](command:agenteca.install)\n[在目录中搜索](command:agenteca.search)",
+  "welcome.updates": "所有包都是最新的。",
+  "welcome.catalog": "目录为空，或尚未配置任何注册表。\n请在终端中添加注册表：`ahub registry add <url>`\n[刷新](command:agenteca.refresh)",
+  "command.refresh": "刷新",
+  "command.search": "在目录中搜索…",
+  "command.install": "安装包…",
+  "command.showPackage": "查看内容",
+  "command.update": "更新",
+  "command.updateAll": "全部更新",
+  "command.remove": "移除",
+  "config.ahubPath": "`ahub` 命令的路径。默认在 `PATH` 中查找。安装方式：`npm install -g @agenteca/cli`。",
+  "config.tools": "安装时的目标工具。留空：使用 `apm.yml` 中声明的工具，否则使用在项目中检测到的工具。"
+}

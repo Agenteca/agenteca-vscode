@@ -4,7 +4,7 @@ Browse a catalog of AI agents, read what a package contains, install it and keep
 
 The extension also works in Cursor, VSCodium and other VS Code derivatives, through Open VSX.
 
-> Version 0.1.0. Install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=agenteca.agenteca) (`agenteca.agenteca`). Open VSX, for Cursor and VSCodium, is coming; meanwhile the `.vsix` file is attached to each [GitHub release](https://github.com/agenteca/agenteca-vscode/releases).
+> Version 0.1.0. Install it from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=agenteca.agenteca) (`agenteca.agenteca`). For Cursor, VSCodium and other VS Code derivatives, install it from [Open VSX](https://open-vsx.org/extension/agenteca/agenteca). The `.vsix` file is also attached to each [GitHub release](https://github.com/agenteca/agenteca-vscode/releases).
 
 ## Requirements
 
